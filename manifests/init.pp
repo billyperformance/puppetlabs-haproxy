@@ -112,6 +112,7 @@ class haproxy (
   $custom_fragment   = undef,
   $config_dir        = $haproxy::params::config_dir,
   $config_file       = $haproxy::params::config_file,
+  $binary_path       = $haproxy::params::binary_path,
   $manage_config_dir = $haproxy::params::manage_config_dir,
 
   # Deprecated
@@ -124,12 +125,17 @@ class haproxy (
       fail('service_ensure parameter must be running, stopped, true, or false')
     }
   }
-  validate_string($package_name,$package_ensure)
+
   validate_bool($service_manage)
   validate_bool($merge_options)
   validate_string($service_options)
   validate_hash($global_options, $defaults_options)
   validate_absolute_path($config_dir)
+  validate_absolute_path($config_file)
+  validate_absolute_path($binary_path)
+
+  validate_re($package_ensure, ['present', 'absent'])
+  validate_re($package_name, ['haproxy', 'rh-haproxy18'])
 
   # NOTE: These deprecating parameters are implemented in this class,
   # not in haproxy::instance.  haproxy::instance is new and therefore
@@ -170,6 +176,7 @@ class haproxy (
     custom_fragment   => $custom_fragment,
     config_dir        => $config_dir,
     config_file       => $config_file,
+    binary_path       => $binary_path,
     merge_options     => $merge_options,
     service_options   => $service_options,
     sysconfig_options => $sysconfig_options,

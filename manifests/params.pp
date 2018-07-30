@@ -42,6 +42,7 @@ class haproxy::params {
       # Single instance:
       $config_dir        = '/etc/haproxy'
       $config_file       = '/etc/haproxy/haproxy.cfg'
+      $binary_path       = '/usr/sbin/haproxy'
       $manage_config_dir = true
       # Multi-instance:
       $config_dir_tmpl   = '/etc/<%= @instance_name %>'
@@ -76,6 +77,7 @@ class haproxy::params {
       # Single instance:
       $config_dir        = '/usr/local/etc'
       $config_file       = '/usr/local/etc/haproxy.conf'
+      $binary_path       = '/usr/sbin/haproxy'
       $manage_config_dir = false
       # Multi-instance:
       $config_dir_tmpl  = '/usr/local/etc/<%= @instance_name %>'

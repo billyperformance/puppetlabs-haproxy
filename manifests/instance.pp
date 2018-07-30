@@ -145,6 +145,7 @@ define haproxy::instance (
   $custom_fragment   = undef,
   $config_dir        = undef,
   $config_file       = undef,
+  $binary_path       = undef,
   $merge_options     = $haproxy::params::merge_options,
   $service_options   = $haproxy::params::service_options,
   $sysconfig_options = $haproxy::params::sysconfig_options,
@@ -166,13 +167,17 @@ define haproxy::instance (
   $_defaults_options = pick($defaults_options, $haproxy::params::defaults_options)
   validate_hash($_global_options,$_defaults_options)
 
-  # Determine instance_name based on:
-  #   single-instance hosts: haproxy
-  #   multi-instance hosts:  haproxy-$title
-  if $title == 'haproxy' {
-    $instance_name = 'haproxy'
+  if $package_name != 'haproxy' {
+    $instance_name = "${package_name}-haproxy"
   } else {
-    $instance_name = "haproxy-${title}"
+    # Determine instance_name based on:
+    #   single-instance hosts: haproxy
+    #   multi-instance hosts:  haproxy-$title
+    if $title == 'haproxy' {
+      $instance_name = "haproxy"
+    } else {
+      $instance_name = "haproxy-${title}"
+    }
   }
 
   # Determine config_dir and config_file:
@@ -188,6 +193,7 @@ define haproxy::instance (
       $_config_file = inline_template($haproxy::params::config_file_tmpl)
     }
   }
+
   if $config_dir != undef {
     $_config_dir = $config_dir
   } else {
@@ -196,6 +202,12 @@ define haproxy::instance (
     } else {
       $_config_dir = inline_template($haproxy::params::config_dir_tmpl)
     }
+  }
+
+  if $binary_path != undef {
+    $_binary_path = $binary_path
+  } else {
+    $_binary_path = $haproxy::params::binary_path
   }
 
   haproxy::config { $title:
@@ -210,6 +222,8 @@ define haproxy::instance (
   haproxy::install { $title:
     package_name   => $package_name,
     package_ensure => $package_ensure,
+    config_file    => $_config_file,
+    binary_path    => $_binary_path,
   }
   haproxy::service { $title:
     instance_name     => $instance_name,
