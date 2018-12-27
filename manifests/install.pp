@@ -27,6 +27,10 @@ define haproxy::install (
         target  => $binary_path,
       }
 
+      file { '/etc/haproxy':
+        ensure  => directory,
+      }
+
       file { '/etc/haproxy/haproxy.cfg':
         ensure  => link,
         force   => true,
